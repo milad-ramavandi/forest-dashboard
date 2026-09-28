@@ -7,9 +7,9 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar/>
-      <div className="w-screen space-y-2">
+      <div className="flex-1 space-y-2 min-w-0">
         <Header />
-        <main className="px-4">
+        <main className="px-5 pb-10">
           <Outlet />
         </main>
       </div>

@@ -6,7 +6,7 @@ import { ModeToggle } from "./ModeToggle"
 
 const Header = () => {
   return (
-    <div className="sticky top-0 flex h-12.25 items-center justify-between">
+    <div className="sticky top-0 flex h-12.25 items-center justify-between bg-background border-b border-b-white/15 z-10">
       <SidebarTrigger className={"cursor-pointer"}/>
       <div className="flex items-center gap-4 pr-4">
         <Link to={paths.home}>
