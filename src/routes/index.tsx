@@ -1,8 +1,12 @@
+import React, { Suspense } from "react"
 import { createBrowserRouter } from "react-router"
 import paths from "./paths"
 import AppLayout from "@/layouts/AppLayout"
-import HomePage from "@/screens/HomePage"
-import NotFoundPage from "@/screens/NotFoundPage"
+import { Spinner } from "@/components/ui/spinner"
+
+const HomePage = React.lazy(() => import("@/screens/HomePage"))
+const NotFoundPage = React.lazy(() => import("@/screens/NotFoundPage"))
+const MetricsPage = React.lazy(() => import("@/screens/MetricsPage"))
 
 const routes = createBrowserRouter([
   {
@@ -11,13 +15,47 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
+        element: (
+          <Suspense
+            fallback={
+              <div className="flex h-screen flex-1 items-center justify-center">
+                <Spinner className="size-8" />
+              </div>
+            }
+          >
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: paths.metrics,
+        element: (
+          <Suspense
+            fallback={
+              <div className="flex h-screen flex-1 items-center justify-center">
+                <Spinner className="size-8" />
+              </div>
+            }
+          >
+            <MetricsPage />
+          </Suspense>
+        ),
       },
     ],
   },
   {
     path: paths.not_found,
-    element: <NotFoundPage />,
+    element: (
+      <Suspense
+        fallback={
+          <div className="flex h-screen flex-1 items-center justify-center">
+            <Spinner className="size-8" />
+          </div>
+        }
+      >
+        <NotFoundPage />
+      </Suspense>
+    ),
   },
 ])
 
