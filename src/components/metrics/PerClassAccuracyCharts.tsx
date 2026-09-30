@@ -5,54 +5,61 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "../ui/chart"
-import { Bar, BarChart, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 const chartConfig = {
-  correct: {
-    label: "Correct",
-    color: "var(--chart-1)",
+  cover_type: {
+    label: "Cover Type",
   },
-  incorrect: {
-    label: "Incorrect",
-    color: "var(--chart-2)",
+  accuracy_score: {
+    label: "Accuracy Score",
+    color: "var(--chart-3)",
   },
 } satisfies ChartConfig
 
 const PerClassAccuracyCharts = ({
   per_class_accuracy,
 }: IPerClassAccuracyChartsProps) => {
-  const chartData = per_class_accuracy
+  const chartData = per_class_accuracy.map((item) => ({
+    ...item,
+    accuracy_score: Number(item.accuracy_score.toFixed(2)),
+  }))
   return (
-    <div className="space-y-4">
-      <p className="text-lg font-semibold">Accuracy score for per cover type.</p>
+    <div className="space-y-4 mt-20">
+      <h2 className="text-xl font-light md:text-2xl lg:text-3xl">
+        Accuracy by Forest Cover Type
+      </h2>
+      <p className="text-muted-foreground">
+        Classification accuracy for each forest cover type on the test dataset.
+      </p>
       <ChartContainer config={chartConfig}>
         <BarChart accessibilityLayer data={chartData}>
-          <XAxis
+          <CartesianGrid vertical={false}/>
+          <YAxis
             dataKey="accuracy_score"
             tickLine={false}
             tickMargin={10}
             axisLine={false}
             tickFormatter={(value) => {
-              return `${value.toFixed(2)}%`
+              return `${value}%`
+            }}
+          />
+           <XAxis
+            dataKey="cover_type"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => {
+              return `Cover Type ${value}`
             }}
           />
           <Bar
-            dataKey="correct"
-            stackId="a"
-            fill="var(--color-correct)"
-            radius={[0, 0, 4, 4]}
+            dataKey="accuracy_score"
+            fill="var(--color-accuracy_score)"
+            radius={4}
           />
-          <Bar
-            dataKey="incorrect"
-            stackId="a"
-            fill="var(--color-incorrect)"
-            radius={[4, 4, 0, 0]}
-          />
-          <ChartTooltip
-            content={<ChartTooltipContent />}
-            // cursor={false}
-            // defaultIndex={1}
-          />
+
+          <ChartTooltip content={<ChartTooltipContent indicator={"line"} />} />
         </BarChart>
       </ChartContainer>
     </div>

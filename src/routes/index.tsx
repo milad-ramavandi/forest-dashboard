@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner"
 const HomePage = React.lazy(() => import("@/screens/HomePage"))
 const NotFoundPage = React.lazy(() => import("@/screens/NotFoundPage"))
 const MetricsPage = React.lazy(() => import("@/screens/MetricsPage"))
+const ChartsPage = React.lazy(() => import("@/screens/ChartsPage"))
 
 const routes = createBrowserRouter([
   {
@@ -38,6 +39,20 @@ const routes = createBrowserRouter([
             }
           >
             <MetricsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: paths.charts,
+        element: (
+          <Suspense
+            fallback={
+              <div className="flex h-screen flex-1 items-center justify-center">
+                <Spinner className="size-8" />
+              </div>
+            }
+          >
+            <ChartsPage />
           </Suspense>
         ),
       },
