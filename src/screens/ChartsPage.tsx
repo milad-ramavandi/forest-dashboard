@@ -6,7 +6,15 @@ import {
 } from "@/components/ui/chart"
 import { Spinner } from "@/components/ui/spinner"
 import { useGetCharts } from "@/hooks/queries"
-import { Bar, BarChart, CartesianGrid, Scatter, ScatterChart, XAxis, YAxis } from "recharts"
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Scatter,
+  ScatterChart,
+  XAxis,
+  YAxis,
+} from "recharts"
 
 const chartConfigAverageElevation = {
   Cover_Type: {
@@ -14,7 +22,7 @@ const chartConfigAverageElevation = {
   },
   Average_Elevation: {
     label: "Average Elevation",
-    color: "var(--chart-1)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -31,7 +39,7 @@ const chartConfigAverageSlope = {
 const chartConfigElevationDistribution = {
   samples: {
     label: "Samples",
-    color: "var(--chart-3)",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
@@ -44,13 +52,37 @@ const chartConfigElevationVsSlope = {
   },
 } satisfies ChartConfig
 
+const chartConfigSamplesCountByCoverType = {
+  Cover_Type: {
+    label: "Cover Type",
+  },
+  Samples_Count: {
+    label: "Samples Count",
+    color: "var(--chart-2)",
+  },
+} satisfies ChartConfig;
+
+const chartConfigSoilTypeDistribution = {
+  Soil_Type: {
+    label:"Soil Type"
+  },
+  Samples_Count: {
+    label:"Samples Count",
+    color: "var(--chart-2)"
+  }
+} satisfies ChartConfig
+
 const ChartsPage = () => {
   const { data, isLoading } = useGetCharts()
+  if (isLoading) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <Spinner className="size-10" />
+      </div>
+    )
+  }
   if (!data) {
     return null
-  }
-  if (isLoading) {
-    return <Spinner className="size-10" />
   }
   const chartDataAverageElevation =
     data.charts.average_elevation_by_cover_type.map((item) => ({
@@ -70,7 +102,10 @@ const ChartsPage = () => {
     })
   )
   const chartDataElevationVsSlope = data.charts.elevation_vs_slope
-  console.log(data)
+  const chartDataSamplesCountByCoverType =
+    data.charts.samples_count_by_cover_type;
+  
+  const chartDataSoilTypeDistribution = data.charts.soil_type_distribution
   return (
     <section className="space-y-8">
       <h1 className="text-center text-2xl font-light tracking-widest md:text-3xl lg:text-4xl">
@@ -81,7 +116,7 @@ const ChartsPage = () => {
           cartographic data through interactive visualizations.
         </p>
       </h1>
-      <div className="mt-20 grid grid-cols-1 gap-8 xl:grid-cols-2 2xl:grid-cols-3">
+      <div className="mt-20 grid grid-cols-1 gap-20 xl:grid-cols-2 2xl:grid-cols-3">
         <section className="space-y-4">
           <h2 className="text-xl font-light md:text-2xl lg:text-3xl">
             Average Elevation by Cover Type
@@ -203,7 +238,7 @@ const ChartsPage = () => {
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                width={100}
+                width={110}
                 unit="m"
               />
 
@@ -227,14 +262,109 @@ const ChartsPage = () => {
             <ScatterChart>
               <CartesianGrid />
 
-              <XAxis type="number" dataKey="Elevation" unit="m" domain={["dataMin", "dataMax"]}/>
+              <XAxis
+                type="number"
+                dataKey="Elevation"
+                unit="m"
+                domain={["dataMin", "dataMax"]}
+              />
 
-              <YAxis type="number" dataKey="Slope" unit="deg"/>
+              <YAxis type="number" dataKey="Slope" unit="deg" />
 
               <ChartTooltip />
 
-              <Scatter data={chartDataElevationVsSlope} fill="var(--color-chart-4)" />
+              <Scatter
+                data={chartDataElevationVsSlope}
+                fill="var(--color-chart-2)"
+              />
             </ScatterChart>
+          </ChartContainer>
+        </section>
+        <section className="space-y-4">
+          <h2 className="text-xl font-light md:text-2xl lg:text-3xl">
+            Samples count by Cover Type
+          </h2>
+          <p className="text-muted-foreground">
+            Compare the samples count across different forest cover types.
+          </p>
+          <ChartContainer config={chartConfigSamplesCountByCoverType}>
+            <BarChart
+              accessibilityLayer
+              data={chartDataSamplesCountByCoverType}
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+
+              <YAxis
+                dataKey="Samples_Count"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+              />
+              <XAxis
+                dataKey="Cover_Type"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                minTickGap={32}
+                tickFormatter={(value) => {
+                  return `Cover Type ${value}`
+                }}
+              />
+              <ChartTooltip
+                content={<ChartTooltipContent indicator={"line"} />}
+              />
+              <Bar
+                dataKey={"Samples_Count"}
+                fill={`var(--color-Samples_Count)`}
+                radius={4}
+              />
+            </BarChart>
+          </ChartContainer>
+        </section>
+        <section className="space-y-4">
+          <h2 className="text-xl font-light md:text-2xl lg:text-3xl">
+            Soil Type Distribution
+          </h2>
+          <p className="text-muted-foreground">
+            Distribution of forest observations across different Soil Types.
+          </p>
+          <ChartContainer config={chartConfigSoilTypeDistribution}>
+            <BarChart
+              accessibilityLayer
+              data={chartDataSoilTypeDistribution}
+              layout="vertical"
+              margin={{
+                left: 12,
+                right: 12,
+              }}
+            >
+              <CartesianGrid vertical={false} />
+
+              <XAxis type={"number"} tickLine={false} axisLine={false} />
+
+              <YAxis
+                type="category"
+                dataKey="Soil_Type"
+                tickLine={false}
+                axisLine={false}
+                tickMargin={8}
+                width={100}
+                tickFormatter={(value) => {
+                  return value.replace("_", " ")
+                }}
+              />
+
+              <ChartTooltip
+                content={<ChartTooltipContent indicator="line" />}
+              />
+
+              <Bar dataKey="Samples_Count" fill="var(--color-Samples_Count)" radius={4} />
+            </BarChart>
           </ChartContainer>
         </section>
       </div>

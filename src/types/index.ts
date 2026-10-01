@@ -1,3 +1,5 @@
+import type React from "react"
+
 export interface IQuantatitiveFeature {
   feature: string
   description: string
@@ -64,4 +66,9 @@ export interface IElevationDistribution {
 export interface ISoilTypeDistribution {
   Soil_Type: string
   Samples_Count:number
+}
+
+export interface IModalProps {
+  closeModal: () => void;
+  children: React.ReactNode;
 }
