@@ -2,7 +2,7 @@
 
 import type { IQuantatitiveFeature } from "@/types"
 
-export const LOGO = "/src/assets/logo.png"
+export const LOGO = "/logo.png"
 
 // QUANTITATIVE FEATURES
 
